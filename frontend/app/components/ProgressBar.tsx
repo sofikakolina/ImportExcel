@@ -4,7 +4,7 @@ export default function ProgressBar({ progress, status }: { progress: number, st
       <div className="bg-blue-600 text-xs leading-none py-1 text-center text-white rounded" style={{ width: `${progress}%` }}>
         {progress}%
       </div>
-      <p>Status: {status}</p>
+      <p>Статус: {status}</p>
     </div>
   )
 }
