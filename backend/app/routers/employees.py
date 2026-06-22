@@ -124,8 +124,20 @@ async def update_employment(employment_id: int, employment_update: schemas.Emplo
     for key, value in employment_update.model_dump(exclude_unset=True).items():
         setattr(employment, key, value)
     await db.commit()
-    await db.refresh(employment)
-    return employment
+
+    # Перезагружаем с joinedload
+    result = await db.execute(
+        select(models.Employment)
+        .options(
+            joinedload(models.Employment.employee),
+            joinedload(models.Employment.division).joinedload(models.Division.department),
+            joinedload(models.Employment.position),
+            joinedload(models.Employment.supervisor),
+        )
+        .where(models.Employment.id == employment_id)
+    )
+    return result.unique().scalar_one()
+
 
 @router.delete("/{employment_id}")
 async def delete_employment(employment_id: int, db: AsyncSession = Depends(get_db)):
